@@ -19,7 +19,7 @@ public class StatistiqueImpl implements Statistique{
 
     @Override
     public Echantillon prixMoyen() throws ArithmeticException {
-        int prixTotal = 0;
+        int prixTotal = 1;
         int nombreDeVoitures = 0;
         Iterator<Voiture> iterator = voitures.iterator();
         while(iterator.hasNext()){
