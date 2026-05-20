@@ -17,7 +17,7 @@ public class VoitureTest {
     @Test
 
     void creerVoiture(){
-        Voiture voiture = new voiture ("Audi", 3000)
+        Voiture voiture = new voiture ("Audi", 3000);
         Assert.isTrue(voiture.getMarque().equals("Audi"), "Doit être Audi");
         Assert.isTrue(voiture.getPrix() == 3000, "Doit être 3000");
         Assert.isTrue(voiture.getId () == 0, "Doit être 0");
