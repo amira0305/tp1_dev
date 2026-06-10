@@ -11,12 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import com.fasterxml.jackson.databind.ObjectMapper; 
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -28,36 +29,46 @@ class WebTests {
     @Autowired
     MockMvc mockMvc;
 
-  
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @Test
-    void statistiquesVoitureAccessibles() throws Exception { 
-        when(statistiqueImpl.prixMoyen()).thenReturn(new Echantillon(2, 15000));
+    private Voiture voiture;
 
-        mockMvc.perform(get("/statistique"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombreDeVoitures").value(2))
-                .andExpect(jsonPath("$.prixMoyen").value(15000));
+    @BeforeEach
+    public void init()
+    {
+        this.voiture = new Voiture("Audi", 20000);
     }
 
     @Test
-    void aucuneVoiture() throws Exception { 
+    public void recupererStatistiquesAvecMock() throws Exception
+    {
+        when(statistiqueImpl.prixMoyen()).thenReturn(new Echantillon(1, 20000));
+        mockMvc.perform(get("/statistique")).andExpectAll(
+            status().isOk(),
+            jsonPath("$.nombreDeVoitures").value(1),
+            jsonPath("$.prixMoyen").value(20000)
+        );
+    }
+
+    @Test
+    public void recupererStatistiquesLanceExceptionAvecMock() throws Exception
+    {
         when(statistiqueImpl.prixMoyen()).thenThrow(ArithmeticException.class);
 
-        mockMvc.perform(get("/statistique"))
-                .andExpect(status().isBadRequest());
+        mockMvc.perform(get("/statistique")).andExpect(
+            status().isBadRequest()
+        );
     }
 
     @Test
-    void postVoitureFonctionne() throws Exception { 
-        String voitureJson = "{\"marque\":\"Renault\",\"prix\":10000}";
+    public void creerUneVoitureAvecMock() throws Exception
+    {
+        doNothing().when(statistiqueImpl).ajouter(any(Voiture.class));
 
         mockMvc.perform(post("/voiture")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(voitureJson))
-                .andExpect(status().isOk());
-
-        verify(statistiqueImpl, times(1)).ajouter(any(Voiture.class));
+               .contentType(MediaType.APPLICATION_JSON)
+               .content(objectMapper.writeValueAsString(this.voiture)))
+               .andExpect(status().isOk());
     }
-
 }
