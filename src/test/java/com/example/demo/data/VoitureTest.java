@@ -2,54 +2,61 @@ package com.example.demo.data;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+
 
 @SpringBootTest
 public class VoitureTest {
 
+    private Voiture voiture;
+    private Voiture voitureVide;
+    private Voiture voiture2;
 
-    @Test
-    void creerVoitureAvecConstructeurVide() { 
-        Voiture v = new Voiture();
-        assertEquals(0, v.getPrix());
-        assertNull(v.getMarque());
+    @BeforeEach
+    public void init()
+    {
+        this.voiture = new Voiture("Audi", 10000);
+        this.voitureVide = new Voiture();
+        this.voiture2 = new Voiture("Opel", 5000);
     }
 
     @Test
-    void creerVoitureAvecMarqueEtPrix() { 
-        Voiture v = new Voiture("Renault", 15000);
-        assertEquals("Renault", v.getMarque());
-        assertEquals(15000, v.getPrix());
+    public void creerVoiture(){
+        assertNotNull(this.voiture);
+        assertEquals("Audi", this.voiture.getMarque());
+        assertEquals(10000, this.voiture.getPrix());
     }
 
     @Test
-    void modifierMarque() { // vérifie que setMarque met bien à jour la marque de la voiture
-        Voiture v = new Voiture("Peugeot", 10000);
-        v.setMarque("Toyota");
-        assertEquals("Toyota", v.getMarque());
+    public void creerVoitureVide(){
+        assertNull(this.voitureVide.getMarque());
+        assertEquals(0, this.voitureVide.getPrix());
+        assertEquals(0, this.voitureVide.getId());
     }
 
     @Test
-    void modifierPrix() { 
-        Voiture v = new Voiture("BMW", 30000);
-        v.setPrix(25000);
-        assertEquals(25000, v.getPrix());
+    public void ajouterId(){
+        this.voiture.setId(2);
+        assertEquals(2, this.voiture.getId());
     }
 
     @Test
-    void modifierId() { 
-        Voiture v = new Voiture();
-        v.setId(42);
-        assertEquals(42, v.getId());
+    public void ajouterMarque(){
+        this.voitureVide.setMarque("Mercedes");
+        assertEquals("Mercedes", this.voitureVide.getMarque());
     }
 
     @Test
-    void toStringContientMarqueEtPrix() { 
-        Voiture v = new Voiture("Ferrari", 200000);
-        v.setId(1);
-        String s = v.toString();
-        assertTrue(s.contains("Ferrari"));
-        assertTrue(s.contains("200000"));
+    public void ajouterPrix(){
+        this.voitureVide.setPrix(20000);
+        assertEquals(20000, this.voitureVide.getPrix());
+    }
+
+    @Test
+    public void afficherVoiture(){
+        assertEquals("Car{marque='Opel', prix=5000, id=0}", this.voiture2.toString());
     }
 }
